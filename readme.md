@@ -1,0 +1,1 @@
+SocketPOP is a realtime two player game using socketIO and webRTC.

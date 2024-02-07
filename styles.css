@@ -1,0 +1,20 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    display: flex;
+    background-color: burlywood;
+    justify-content: space-around;
+}
+
+video{
+    background-color: #333333;
+    border: 2px solid black;
+    height: 15rem;
+    width: 30rem;
+    margin: 3rem 0;
+    border-radius: 0.75rem;
+}
