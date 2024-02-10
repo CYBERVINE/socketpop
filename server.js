@@ -14,41 +14,38 @@ const expressServer = https.createServer({cert, key}, app)
 const io = new socketio.Server(expressServer)
 
 let connections = []
-let sockets = []
 
 io.on('connection', (socket)=> {
-    sockets.push(socket)
-
     socket.on('offer', offer=>{
         connections.push({
             offerer: socket.id,
             offer: offer,
             offererICE: [],
             answerer: null,
-            anser: null,
+            answer: null,
             answererICE: []
-
         })
         io.emit('newConnection', connections[connections.length-1])
     })
 
     socket.on('newICE', candidate => {
-        console.log("socket",socket.id)
-        let connectionOfferer
-        connections.forEach(c=>{
-            console.log((c.offerer === socket.id))
-            if (c.offerer === socket.id) connectionOfferer = c
-        })
-        console.log(connectionOfferer)
-        if (connectionOfferer){
-            connectionOfferer.offererICE.push(candidate) 
+        let connection = connections.find(element => element.offerer === socket.id)
+        if (connection){
+            connection.offererICE.push(candidate) 
+            io.to(connection?.answerer).emit('newIceCandidate', candidate)
             return}
-        
-        const connectionAnswerer = connections.find((c)=>c.answerer===socket.id)
-        console.log(connectionAnswerer)
-        if (connectionAnswerer){
-            connectionAnswerer.answererICE.push(candidate) 
+        connection = connections.find(element=>element.answerer === socket.id)
+        if (connection){
+            connection.answererICE.push(candidate) 
+            console.log(connection)
+            io.to(connection.offerer).emit('newIceCandidate', candidate)
             return}
+    })
+
+    socket.on('answer', answer => {
+        const connection = connections.find(element => element.offerer === answer[1])
+        connection.answerer = socket.id
+        connection.answer = answer[0]
     })
 
     socket.on('disconnect', socket=>{

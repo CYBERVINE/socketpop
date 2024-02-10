@@ -18,45 +18,58 @@ const getMedia = async () => {
     })
     localStream = new MediaStream(media)
     localVideo.srcObject = localStream
-    remoteVideo.srcObject = remoteStream
 }
 
-const initalizePeerConnection = async () => {
-    offerer = true
+const createPeerConnection = async (connection) => {
+    console.log(connection)
     const peerConnection = new RTCPeerConnection(configuration)
-    localStream.getTracks().forEach(track=>peerConnection.addTrack(track,localStream))
-    const offer = await peerConnection.createOffer() // SDP
-    localDescription = await peerConnection.setLocalDescription(offer)
-
+    if (connection === undefined){
+        localStream.getTracks().forEach(track=>{
+            console.log(track)
+            peerConnection.addTrack(track,localStream)})
+        const offer = await peerConnection.createOffer() // SDP
+        localDescription = await peerConnection.setLocalDescription(offer)
+        socket.emit('offer', offer)
+    } else {
+        peerConnection.setRemoteDescription(new RTCSessionDescription(connection.offer))
+        localStream.getTracks().forEach(track=>{
+            console.log(track)
+            peerConnection.addTrack(track,localStream)})
+        const answer = await peerConnection.createAnswer() //SDP
+        await peerConnection.setLocalDescription(answer)
+        console.log(answer)
+        socket.emit('answer', [answer, connection.offerer])
+    }
     console.log(peerConnection)
-    socket.emit('offer', offer)
-
     peerConnection.addEventListener('icecandidate', event => {
         if(event.candidate) {
             socket.emit('newICE',event.candidate)
-            console.log(event.candidate)
         }
     })
+    peerConnection.addEventListener('track', event => {
+        console.log(event)
+        remoteVideo.srcObject = remoteStream
+    })
+}
 
-}
-const continuePeerConnection = async (connection) => {
-    
-}
+//i need to set remote description on the offerer browser
 
 socket.on('newConnection', connection=>{
     joinGame.innerHTML = ""
     const join = document.createElement("button")
     if (socket.id === connection.offerer )  join.innerText = "game request made" 
     else {
-        join.addEventListener('click', continuePeerConnection(connection))
+        join.addEventListener('click', ()=> createPeerConnection(connection))
         join.innerText = `click to play ${connection.offerer}`
     }
     joinGame.appendChild(join)
 })
 
-startGame.addEventListener('click', ()=>initalizePeerConnection())
+socket.on('newIceCandidate', candidate => {
+    console.log(candidate)
+
+})
+
+startGame.addEventListener('click', ()=>createPeerConnection())
 
 getMedia()
-
-
-
