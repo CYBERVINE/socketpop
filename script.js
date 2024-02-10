@@ -40,7 +40,9 @@ const createPeerConnection = async (connection) => {
         await peerConnection.setLocalDescription(answer)
         // remoteVideo.srcObject = peerConnection.MediaStream
         console.log(connection.tracks)
-        socket.emit('answer', [answer, connection.offerer])
+        const offer = await socket.emitWithAck('answer', [answer, connection.offerer])
+        offer.offererICE.forEach(ICE=>peerConnection.addIceCandidate(ICE))
+        console.log(offer)
         console.log(peerConnection)
     }
     console.log(peerConnection)

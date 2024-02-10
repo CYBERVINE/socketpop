@@ -52,10 +52,11 @@ io.on('connection', (socket)=> {
             return}
     })
 
-    socket.on('answer', answer => {
+    socket.on('answer', (answer, ackFunc) => {
         const connection = connections.find(connection => connection.offerer === answer[1])
         connection.answerer = socket.id
         connection.answer = answer[0]
+        ackFunc(connection)
     })
 
     // socket.on('disconnect', socket=>{
