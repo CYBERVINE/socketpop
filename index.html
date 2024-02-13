@@ -7,10 +7,29 @@
     <title>SocketPOP</title>
 </head>
 <body>
-    <video id="localStream" src=""></video>
-    <video id="remoteStream" src=""></video>
+    <header>
+        <button id="startGame">Start Game</button>
+        <div id="joinGame"></div>
+    </header>
+    <section id="videos">
+        <div>
+            <video id="localVideo" autoplay></video>
+            <p id="playerOne">Your Score:</p>
+        </div>
+        <div>
+            <video id="remoteVideo" autoplay ></video>
+            <p id="playerTwo">Thier Score:</p>
+        </div>
+    </section>
+    <div id="opponent"></div>
+    <section class="game">
+        <div class="disc" id="1"></div>
+        <div class="disc" id="2"></div>
+        <div class="disc" id="3"></div>
+        <div class="disc" id="4"></div>
+    </section>
 </body>
     <script src="socket.io/socket.io.js"></script>
-    <script src="./peerConnection.js"></script>
-    <script src="./sockets.js"></script>
+    <script src="script.js"></script>
+    <script src="gamescript.js"></script>
 </html>
