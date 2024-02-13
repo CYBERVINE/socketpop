@@ -5,7 +5,7 @@ const discThree = document.getElementById('3')
 const discFour = document.getElementById('4')
 const playerOne = document.getElementById('playerOne')
 const playerTwo = document.getElementById('playerTwo')
-
+const audio = new Audio('./sound.mp3');
 const discs = [discOne,discTwo,discThree,discFour]
 
 document.addEventListener('mousemove', (e)=>{
@@ -25,13 +25,17 @@ socket.on('opponent', position=>{
 
 socket.on('game-state', gameState=> {
     discs[gameState].classList.toggle("disc--active")
+    if(discs[gameState].classList[1]==="disc--active"){
+        console.log(discs[gameState].classList[1]==="disc--active")
+        audio.play();
+    }
 })
 
 socket.on('player-score', player => {
     if (player.socketId === socket.id){
-        playerOne.innerText=`Your Score ${player.score}`
+        playerOne.innerText=`Your Score: ${player.score}`
     } else {
-        playerTwo.innerText=`Their Score ${player.score}`
+        playerTwo.innerText=`Their Score: ${player.score}`
     }
 })
 
@@ -46,6 +50,13 @@ socket.on('resetButton', ()=>{
     })
     reset.innerText = "Reset"
     menu.appendChild(reset)
+})
+
+socket.on('clearGame', ()=>{
+    
+    for(i=0;i<discs.length;i++){
+        discs[i].classList.remove("disc--active")
+    }
 })
 
 
