@@ -24,6 +24,7 @@ const io = new socketio.Server(expressServer,{
 let connections = []
 let players = []
 let time = 6000
+let gameId
 
 io.on('connection', (socket)=> {
     players.push({socketId:socket.id,score:0})
@@ -67,10 +68,10 @@ io.on('connection', (socket)=> {
 
     socket.on('gameOn', ()=>{
         io.emit('resetButton')
-        setInterval(()=>{
-            io.emit('game-state', Math.floor(Math.random()*4))
-            time = (Math.floor(Math.random()*2000))
-        },time)
+        gameId = setInterval(()=>{
+                    io.emit('game-state', Math.floor(Math.random()*4))
+                    time = (Math.floor(Math.random()*2000))
+                },time)
     
     })
 
@@ -96,6 +97,7 @@ io.on('connection', (socket)=> {
     
     socket.on('disconnect', socket=>{
         console.log(socket,"disconnected")
+        clearInterval(gameId)
     })
 })
 

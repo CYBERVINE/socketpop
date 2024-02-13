@@ -1,7 +1,3 @@
 node_modules
 package-lock.json
 tasklist.md
-ca.crt
-ca.key
-cert.crt
-cert.key
