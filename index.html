@@ -7,10 +7,6 @@
     <title>SocketPOP</title>
 </head>
 <body>
-    <header>
-        <button id="startGame">Start Game</button>
-        <div id="joinGame"></div>
-    </header>
     <section id="videos">
         <div>
             <video id="localVideo" autoplay></video>
@@ -21,13 +17,17 @@
             <p id="playerTwo">Thier Score:</p>
         </div>
     </section>
-    <div id="opponent"></div>
     <section class="game">
         <div class="disc" id="1"></div>
         <div class="disc" id="2"></div>
         <div class="disc" id="3"></div>
         <div class="disc" id="4"></div>
     </section>
+    <footer>
+        <div id="menu">
+            <button id="startGame">Start Game</button>
+        </div>
+    </footer>
 </body>
     <script src="socket.io/socket.io.js"></script>
     <script src="script.js"></script>

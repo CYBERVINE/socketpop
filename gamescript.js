@@ -13,12 +13,14 @@ document.addEventListener('mousemove', (e)=>{
         x : e.clientX,
         y : e.clientY
     }
+    localVideo.style.top = `${mousePosition.y - 60}px`
+    localVideo.style.left = `${mousePosition.x - 60}px`
     socket.emit('mouse-position', mousePosition)
 })
 
 socket.on('opponent', position=>{
-    opponent.style.top = `${position.y}px`
-    opponent.style.left = `${position.x}px`
+    remoteVideo.style.top = `${position.y - 60}px`
+    remoteVideo.style.left = `${position.x - 60}px`
 })
 
 socket.on('game-state', gameState=> {
@@ -31,9 +33,22 @@ socket.on('player-score', player => {
     } else {
         playerTwo.innerText=`Their Score ${player.score}`
     }
-
-
 })
+
+socket.on('resetButton', ()=>{
+    menu.innerHTML = ""
+    const reset = document.createElement("button")
+    reset.addEventListener('click', ()=> {
+        playerOne.innerText=`Your Score: ${0}`
+        playerTwo.innerText=`Your Score: ${0}`
+
+        socket.emit('reset')
+    })
+    reset.innerText = "Reset"
+    menu.appendChild(reset)
+})
+
+
 socket.on('toggle', discId => {
     console.log('toggle',discId)
     console.log(discs[discId-1].classList[1])

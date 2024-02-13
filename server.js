@@ -45,13 +45,14 @@ io.on('connection', (socket)=> {
             console.log(connection, "offer")
             connection.offererICE.push(candidate) 
             io.to(connection?.answerer).emit('newIceCandidate', candidate)
-            return}
+            return
+        }
         connection = connections.find(element=>element.answerer === socket.id)
         if (connection){
             connection.answererICE.push(candidate) 
             console.log(connection, "answer")
             io.to(connection.offerer).emit('newIceCandidate', [candidate, connection.answer])
-            return}
+        }
     })
 
     socket.on('answer', (answer, ackFunc) => {
@@ -61,6 +62,18 @@ io.on('connection', (socket)=> {
         ackFunc(connection)
     })
 
+    ////////////////// GAME LISTENERS /////////////////////
+
+    socket.on('gameOn', ()=>{
+        io.emit('resetButton')
+    })
+
+    socket.on('reset',()=>{
+        time = 6000
+        players.forEach(player=>{
+            player.score = 0
+        })
+    })
 
     socket.on('clicked', discId=>{
         io.emit('toggle', discId)
