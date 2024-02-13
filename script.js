@@ -4,7 +4,7 @@ const localVideo = document.getElementById('localVideo')
 const remoteVideo = document.getElementById('remoteVideo')
 const startGame = document.getElementById('startGame')
 const joinGame = document.getElementById('joinGame')
-let playerOne, playerTwo, remoteStream, localStream, localDescription, offerer
+let remoteStream, localStream, localDescription, offerer
 
 const configuration = {
     'iceServers': [
@@ -37,7 +37,7 @@ const getMedia = async () => {
         peerConnection.addTrack(track,localStream)})
 }
 
-const createPeerConnection = async (connection) => {
+const createConnection = async (connection) => {
     if (connection === undefined){
         const offer = await peerConnection.createOffer() // SDP
         localDescription = await peerConnection.setLocalDescription(offer)
@@ -49,7 +49,7 @@ const createPeerConnection = async (connection) => {
         const offer = await socket.emitWithAck('answer', [answer, connection.offerer])
         offer.offererICE.forEach(ICE=>peerConnection.addIceCandidate(ICE))
     }
-
+    console.log(peerConnection)
 }
 
 socket.on('newConnection', connection=>{
@@ -57,7 +57,7 @@ socket.on('newConnection', connection=>{
     const join = document.createElement("button")
     if (socket.id === connection.offerer )  join.innerText = "game request made" 
     else {
-        join.addEventListener('click', ()=> createPeerConnection(connection))
+        join.addEventListener('click', ()=> createConnection(connection))
         join.innerText = `click to play ${connection.offerer}`
     }
     joinGame.appendChild(join)
@@ -68,10 +68,9 @@ socket.on('newIceCandidate', async answer => {
         await peerConnection.setRemoteDescription( new RTCSessionDescription(answer[1]))
     }
     peerConnection.addIceCandidate(answer[0])
-
 })
 
-startGame.addEventListener('click', ()=>createPeerConnection())
+startGame.addEventListener('click', ()=>createConnection())
 
 getMedia()
 

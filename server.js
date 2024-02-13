@@ -22,8 +22,10 @@ const io = new socketio.Server(expressServer,{
 })
 
 let connections = []
+let players = []
 
 io.on('connection', (socket)=> {
+    players.push({socketId:socket.id,score:0})
     socket.on('offer', offer=>{
         connections.push({
             offerer: socket.id,
@@ -59,13 +61,31 @@ io.on('connection', (socket)=> {
         ackFunc(connection)
     })
 
-    // socket.on('disconnect', socket=>{
-    //     console.log(socket,"disconnected")
-    // })
+
+    socket.on('clicked', discId=>{
+        io.emit('toggle', discId)
+        const player = players.find(player=>player.socketId === socket.id)
+        player.score++
+        io.emit('player-score',player)
+    })
+    
+    socket.on('mouse-position',mousePosition=>{
+        socket.broadcast.emit('opponent',mousePosition)
+    })
+    
+    let time = 6000
+    
+    setInterval(()=>{
+        console.log(time)
+        io.emit('game-state', Math.floor(Math.random()*4))
+        time = (Math.floor(Math.random()*2000))
+        
+    },time)
+
+    socket.on('disconnect', socket=>{
+        console.log(socket,"disconnected")
+    })
 })
-
-
-
 
 
 expressServer.listen(8000)

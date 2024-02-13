@@ -22,3 +22,34 @@ video{
     display: flex;
     justify-content: space-around;
 }
+
+#opponent{
+    position: absolute;
+    height: 4px;
+    width: 4px;
+    background-color: red;
+    border-radius: 50%;
+    z-index: 3;
+}
+
+.game{
+    padding: 1rem;
+    border: 2px solid black;
+    height: 300px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 1rem;
+}
+
+.disc{
+    border: 1px solid black;
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
+}
+
+.disc--active{
+    background-color: aqua;
+}
