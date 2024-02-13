@@ -1,5 +1,5 @@
 // const socket = io('https://localhost:8000/')
-const socket = io('https://192.168.1.72:8000/')
+const socket = io('https://socketpop.onrender.com/')
 const localVideo = document.getElementById('localVideo')
 const remoteVideo = document.getElementById('remoteVideo')
 const startGame = document.getElementById('startGame')

@@ -1,5 +1,5 @@
 const fs = require('fs')
-const https = require('https')
+const http = require('http')
 const express = require('express')
 const cors = require('cors')
 const socketio = require('socket.io')
@@ -11,15 +11,16 @@ app.use(cors())
 const key = fs.readFileSync('cert.key')
 const cert = fs.readFileSync('cert.crt')
 
-const expressServer = https.createServer({cert, key}, app)
-const io = new socketio.Server(expressServer,{
-    cors: {
-        origin: [
-            "https://localhost",
-            'https://192.168.1.72'
-        ]
-    }
-})
+const expressServer = http.createServer(app)
+const io = new socketio.Server(expressServer)
+    // ,{
+    // cors: {
+    //     origin: [
+    //         "http://localhost",
+    //         'http://192.168.1.72'
+    //     ]
+    // }
+// })
 
 let connections = []
 let players = []
