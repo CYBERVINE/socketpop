@@ -12,15 +12,14 @@ const playerTwo = document.getElementById('playerTwo')
 const discs = [discOne,discTwo,discThree,discFour,discFive,discSix,discSeven,discEight]
 const soundOne = new Audio('./sound1.mp3');
 const soundTwo = new Audio('./sound2.wav');
-const soundThree = new Audio('./sound3.mp3');
 const popOne = new Audio('./pop1.wav');
 const popTwo = new Audio('./pop2.wav');
 const popThree = new Audio('./pop3.mp3');
 const popFour = new Audio('./pop4.mp3');
 const popFive = new Audio('./pop5.mp3');
-const sounds = [soundOne,soundTwo,soundThree]
+const sounds = [soundOne,soundTwo]
 const pops = [popOne,popTwo,popThree,popFour,popFive]
-sounds.forEach(sound=>sound.volume = 0.008)
+sounds.forEach(sound=>sound.volume = 0.005)
 pops.forEach(pop=>pop.volume = 0.07)
 
 document.addEventListener('mousemove', (e)=>{
@@ -85,4 +84,3 @@ discs.forEach(disc=>{
         pops[Math.floor(Math.random()*5)].play()
     })
 })
-pop

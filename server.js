@@ -58,8 +58,8 @@ io.on('connection', (socket)=> {
     socket.on('gameOn', ()=>{
         io.emit('resetButton')
         gameId = setInterval(()=>{
-            io.emit('game-state', [Math.floor(Math.random()*8),Math.floor(Math.random()*4)])
-        },(2000 + Math.random()*5000))
+            io.emit('game-state', [Math.floor(Math.random()*8),Math.floor(Math.random()*2)])
+        },(500 + Math.random()*4000))
     })
 
     socket.on('reset',()=>{
