@@ -8,23 +8,11 @@ const app = express()
 app.use(express.static(__dirname))
 app.use(cors())
 
-const key = fs.readFileSync('cert.key')
-const cert = fs.readFileSync('cert.crt')
-
 const expressServer = http.createServer(app)
 const io = new socketio.Server(expressServer)
-    // ,{
-    // cors: {
-    //     origin: [
-    //         "http://localhost",
-    //         'http://192.168.1.72'
-    //     ]
-    // }
-// })
 
 let connections = []
 let players = []
-let time = 6000
 let gameId
 
 io.on('connection', (socket)=> {
@@ -70,14 +58,11 @@ io.on('connection', (socket)=> {
     socket.on('gameOn', ()=>{
         io.emit('resetButton')
         gameId = setInterval(()=>{
-                    io.emit('game-state', Math.floor(Math.random()*4))
-                    time = (Math.floor(Math.random()*2000))
-                },time)
-    
+            io.emit('game-state', [Math.floor(Math.random()*8),Math.floor(Math.random()*4)])
+        },(2000 + Math.random()*5000))
     })
 
     socket.on('reset',()=>{
-        time = 6000
         players.forEach(player=>{
             player.score = 0
         })
@@ -95,7 +80,6 @@ io.on('connection', (socket)=> {
         socket.broadcast.emit('opponent',mousePosition)
     })
     
-    
     socket.on('disconnect', socket=>{
         console.log(socket,"disconnected")
         clearInterval(gameId)
@@ -103,7 +87,10 @@ io.on('connection', (socket)=> {
 })
 
 
-
+setInterval(()=>{
+    players = []
+    connections = []
+},86400000)
 
 
 

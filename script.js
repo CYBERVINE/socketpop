@@ -1,5 +1,5 @@
-// const socket = io('https://localhost:8000/')
-const socket = io('https://socketpop.onrender.com/')
+const socket = io('http://localhost:8000/')
+//const socket = io('https://socketpop.onrender.com/')
 const localVideo = document.getElementById('localVideo')
 const remoteVideo = document.getElementById('remoteVideo')
 const startGame = document.getElementById('startGame')
@@ -27,7 +27,7 @@ peerConnection.addEventListener('track', event => {
 const getMedia = async () => {
     const media = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: false
+        audio: true
     })
     localStream = new MediaStream(media)
     localVideo.srcObject = localStream
@@ -37,6 +37,7 @@ const getMedia = async () => {
 }
 
 const createConnection = async (connection) => {
+    await getMedia()
     if (connection === undefined){
         const offer = await peerConnection.createOffer() // SDP
         localDescription = await peerConnection.setLocalDescription(offer)
@@ -72,5 +73,4 @@ socket.on('newIceCandidate', async answer => {
 
 startGame.addEventListener('click', ()=>createConnection())
 
-getMedia()
 
