@@ -11,14 +11,19 @@ const expressServer = http.createServer(app)
 const io = new socketio.Server(expressServer)
 
 let connections = []
-let players = []
+let playerOne = {}
+let playerTwo = {}
 let gameId
 
 io.on('connection', (socket)=> {
     console.log("connection", socket.id)
-    players.push({socketId:socket.id,score:0})
-    socket.emit('openOffer',connections[connections.length-1])
+
+    if (!playerTwo.socketId){
+        socket.emit('openOffer',connections[connections.length-1])
+    }
+    
     socket.on('offer', offer=>{
+        playerOne = {socketId:socket.id,score:0}
         connections.push({
             offerer: socket.id,
             offer: offer,
@@ -43,39 +48,49 @@ io.on('connection', (socket)=> {
             io.to(connection.offerer).emit('newIceCandidate', [candidate, connection.answer])
         }
     })
-
+    
     socket.on('answer', (answer, ackFunc) => {
         const connection = connections.find(connection => connection.offerer === answer[1])
         connection.answerer = socket.id
         connection.answer = answer[0]
+        playerTwo = {socketId:socket.id,score:0}
+        console.log(playerTwo)
         ackFunc(connection)
     })
-
+    
     ////////////////// GAME LISTENERS /////////////////////
-
+    
     socket.on('gameOn', ()=>{
         io.emit('resetButton')
         gameId = setInterval(()=>{
             io.emit('game-state', [Math.floor(Math.random()*8),Math.floor(Math.random()*2)])
         },(500 + Math.random()*4000))
     })
-
+    
     socket.on('reset',()=>{
         players.forEach(player=>{
             player.score = 0
         })
         io.emit('clearGame')
     })
-
+    
     socket.on('clicked', discId=>{
-        io.emit('toggle', discId)
-        const player = players.find(player=>player.socketId === socket.id)
-        player.score++
-        io.emit('player-score',player)
+        if (socket.id === playerOne.socketId || socket.id === playerTwo.socketId) {
+            io.emit('toggle', discId)
+            const player = socket.id === playerOne.socketId ? playerOne : playerTwo
+            player.score++
+            io.emit('player-score',player)
+        }
     })
     
     socket.on('mouse-position',mousePosition=>{
-        socket.broadcast.emit('opponent',mousePosition)
+        if (socket.id === playerOne.socketId || socket.id === playerTwo.socketId) {
+            if (socket.id === playerOne.socketId) {
+                socket.to(playerTwo.socketId).emit('opponent',mousePosition)
+            } else if (socket.id === playerTwo.socketId) {
+                socket.to(playerOne.socketId).emit('opponent',mousePosition)
+            }
+        }
     })
     
     socket.on('disconnecting', reason=>{
@@ -87,11 +102,8 @@ io.on('connection', (socket)=> {
                 connections.splice(i,1)
             }
         }
-        for (i=0;i<players.length;i++){
-            if (players[i].socketId === socket.id){
-                players.splice(i,1)
-            }
-        }
+        if (socket.id === playerOne.socketId){playerOne={}}
+        if (socket.id === playerTwo.socketId){playerTwo={}}
     })
 })
 
