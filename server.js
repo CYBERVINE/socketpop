@@ -16,12 +16,12 @@ let playerTwo = {}
 let gameId
 
 io.on('connection', (socket)=> {
-    console.log("connection", socket.id)
-
     if (!playerTwo.socketId){
         socket.emit('openOffer',connections[connections.length-1])
     }
-    
+    if (playerOne.socketId && playerTwo.socketId){
+        socket.emit("gameInProgress")
+    }
     socket.on('offer', offer=>{
         playerOne = {socketId:socket.id,score:0}
         connections.push({
@@ -54,7 +54,6 @@ io.on('connection', (socket)=> {
         connection.answerer = socket.id
         connection.answer = answer[0]
         playerTwo = {socketId:socket.id,score:0}
-        console.log(playerTwo)
         ackFunc(connection)
     })
     
@@ -68,9 +67,8 @@ io.on('connection', (socket)=> {
     })
     
     socket.on('reset',()=>{
-        players.forEach(player=>{
-            player.score = 0
-        })
+        playerOne.score = 0
+        playerTwo.score = 0
         io.emit('clearGame')
     })
     
