@@ -1,5 +1,5 @@
-// const socket = io('http://localhost:8000/')
-const socket = io('https://socketpop.onrender.com/')
+const socket = io('http://localhost:8000/')
+//const socket = io('https://socketpop.onrender.com/')
 const localVideo = document.getElementById('localVideo')
 const remoteVideo = document.getElementById('remoteVideo')
 const startGame = document.getElementById('startGame')
@@ -53,6 +53,12 @@ const createConnection = async (connection) => {
     console.log(peerConnection)
 }
 
+socket.on("openOffer",openOffer=>{
+    console.log(socket.id)
+    if (openOffer.offerer != socket.id){
+        createConnection(openOffer)
+    }})
+
 socket.on('newConnection', connection=>{
     menu.innerHTML = ""
     const join = document.createElement("button")
@@ -62,6 +68,10 @@ socket.on('newConnection', connection=>{
         join.innerText = "Join Game"
     }
     menu.appendChild(join)
+})
+
+socket.on("opponentLeft", ()=>{
+    remoteVideo.srcObject = null
 })
 
 socket.on('newIceCandidate', async answer => {

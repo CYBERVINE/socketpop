@@ -39,7 +39,6 @@ socket.on('opponent', position=>{
 
 socket.on('game-state', gameState=> {
     discs[gameState[0]].classList.toggle("disc--active")
-    console.log(gameState)
     if(discs[gameState[0]].classList[1]==="disc--active"){
         sounds[gameState[1]].play();
     }
@@ -60,7 +59,13 @@ socket.on('resetButton', ()=>{
         socket.emit('reset')
     })
     reset.innerText = "Reset"
+    const exit = document.createElement("button")
+    exit.addEventListener('click', ()=> {
+        location.reload()
+    })
+    exit.innerText = "Exit"
     menu.appendChild(reset)
+    menu.appendChild(exit)
 })
 
 socket.on('clearGame', ()=>{

@@ -1,4 +1,3 @@
-const fs = require('fs')
 const http = require('http')
 const express = require('express')
 const cors = require('cors')
@@ -16,7 +15,9 @@ let players = []
 let gameId
 
 io.on('connection', (socket)=> {
+    console.log("connection", socket.id)
     players.push({socketId:socket.id,score:0})
+    socket.emit('openOffer',connections[connections.length-1])
     socket.on('offer', offer=>{
         connections.push({
             offerer: socket.id,
@@ -26,14 +27,12 @@ io.on('connection', (socket)=> {
             answer: null,
             answererICE: []
         })
-        console.log(offer)
         io.emit('newConnection', connections[connections.length-1])
     })
 
     socket.on('newICE', candidate => {
         let connection = connections.find(element => element.offerer === socket.id)
         if (connection){
-            console.log(connection, "offer")
             connection.offererICE.push(candidate) 
             io.to(connection?.answerer).emit('newIceCandidate', candidate)
             return
@@ -41,7 +40,6 @@ io.on('connection', (socket)=> {
         connection = connections.find(element=>element.answerer === socket.id)
         if (connection){
             connection.answererICE.push(candidate) 
-            console.log(connection, "answer")
             io.to(connection.offerer).emit('newIceCandidate', [candidate, connection.answer])
         }
     })
@@ -80,18 +78,22 @@ io.on('connection', (socket)=> {
         socket.broadcast.emit('opponent',mousePosition)
     })
     
-    socket.on('disconnect', socket=>{
-        console.log(socket,"disconnected")
+    socket.on('disconnecting', reason=>{
         clearInterval(gameId)
+        for (i=0;i<connections.length;i++){
+            if (connections[i].offerer === socket.id || connections[i].answerer === socket.id){
+                const otherSocket = socket.id === connections[i].offerer ? connections[i].answerer : connections[i].offerer 
+                socket.to(otherSocket).emit("opponentLeft")
+                connections.splice(i,1)
+            }
+        }
+        for (i=0;i<players.length;i++){
+            if (players[i].socketId === socket.id){
+                players.splice(i,1)
+            }
+        }
     })
 })
-
-
-setInterval(()=>{
-    players = []
-    connections = []
-},86400000)
-
 
 
 expressServer.listen(8000)
