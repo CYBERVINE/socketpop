@@ -39,6 +39,7 @@ socket.on('opponent', position=>{
 
 socket.on('game-state', gameState=> {
     discs[gameState[0]].classList.toggle("disc--active")
+    console.log(gameState)
     if(discs[gameState[0]].classList[1]==="disc--active"){
         sounds[gameState[1]].play();
     }
@@ -46,9 +47,9 @@ socket.on('game-state', gameState=> {
 
 socket.on('player-score', player => {
     if (player.socketId === socket.id){
-        playerOne.innerText=`Your Score: ${player.score}`
+        playerOne.innerText=`You: ${player.score}`
     } else {
-        playerTwo.innerText=`Their Score: ${player.score}`
+        playerTwo.innerText=`Them: ${player.score}`
     }
 })
 
@@ -67,8 +68,8 @@ socket.on('clearGame', ()=>{
     for(i=0;i<discs.length;i++){
         discs[i].classList.remove("disc--active")
     }
-    playerOne.innerText=`Your Score: ${0}`
-    playerTwo.innerText=`Your Score: ${0}`
+    playerOne.innerText=`You: ${0}`
+    playerTwo.innerText=`Them: ${0}`
 })
 
 
