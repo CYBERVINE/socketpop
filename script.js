@@ -77,7 +77,6 @@ socket.on("opponentLeft", ()=>{
 })
 
 socket.on('gameInProgress',()=>{
-    console.log("game")
     menu.innerHTML = ""
     const gameInProgress = document.createElement("p")
     gameInProgress.innerText = "A game is already in progress.. Try again later!"
