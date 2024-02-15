@@ -1,21 +1,50 @@
 *{
     box-sizing: border-box;
-    margin: 0;
+    margin: 0.5rem;
     padding: 0;
 }
 
 body{
-    background-color: burlywood;
+    font-family: sans-serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: white;
+    background-color: #333333;
+    cursor:none;
+    width: 1230px;
+}
 
+button{
+    background-color: black;
+    font-weight: 800;
+    color: white;
+    border: 1px solid blue;
+    padding: 1rem;
+    cursor:pointer;
+    opacity: 0.95;
+}
+
+button:hover{
+    border: 1px solid green;
+    color: green;
 }
 
 video{
-    background-color: #333333;
-    border: 2px solid black;
-    height: 15rem;
-    width: 30rem;
-    margin: 3rem 0;
-    border-radius: 0.75rem;
+    height: 6rem;
+    width: 6rem;
+    border-radius: 100%;
+    box-shadow: 0 0 20px white;
+    object-fit: cover;
+    background-color: rgb(3, 143, 143);
+    border: 1px solid black;
+}
+
+#localVideo{
+    position: absolute;
+}
+
+#remoteVideo{
+    position: absolute;
 }
 
 #videos{
@@ -23,33 +52,56 @@ video{
     justify-content: space-around;
 }
 
-#opponent{
-    position: absolute;
-    height: 4px;
-    width: 4px;
-    background-color: red;
-    border-radius: 50%;
-    z-index: 3;
+.title{
+    text-align: center;
+    color: white;
+    font-size: 3rem;
+    margin-top: 1rem;
+}
+
+.score{
+    color: azure;
 }
 
 .game{
+    border-radius: 3rem;
+    border: 0.25rem solid purple;
+    box-shadow: 0 0 20px rgb(166, 223, 166);
     padding: 1rem;
-    border: 2px solid black;
-    height: 300px;
-    width: 100%;
+    height: 400px;
+    width: 1230px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 1rem;
 }
 
 .disc{
-    border: 1px solid black;
     border-radius: 50%;
-    height: 100%;
-    width: 100%;
+    height: 0;
+    width: 0;
+    z-index: 2;
 }
 
 .disc--active{
-    background-color: aqua;
+    height: 100%;
+    width: 100%;
+    border: 1px solid black;
+    background-color: rgb(219, 125, 141);
+    opacity: 0.3;
+    animation: socket 400ms alternate infinite;
+}
+
+@keyframes socket {
+    0%{
+        transform: scale(0);
+    }
+    
+    100%{
+        transform: scale(1.2);
+    }
+}
+
+::-webkit-scrollbar{
+    width: 0;
 }

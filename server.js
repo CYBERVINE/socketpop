@@ -1,5 +1,5 @@
 const fs = require('fs')
-const https = require('https')
+const http = require('http')
 const express = require('express')
 const cors = require('cors')
 const socketio = require('socket.io')
@@ -8,21 +8,12 @@ const app = express()
 app.use(express.static(__dirname))
 app.use(cors())
 
-const key = fs.readFileSync('cert.key')
-const cert = fs.readFileSync('cert.crt')
-
-const expressServer = https.createServer({cert, key}, app)
-const io = new socketio.Server(expressServer,{
-    cors: {
-        origin: [
-            "https://localhost",
-            'https://192.168.1.72'
-        ]
-    }
-})
+const expressServer = http.createServer(app)
+const io = new socketio.Server(expressServer)
 
 let connections = []
 let players = []
+let gameId
 
 io.on('connection', (socket)=> {
     players.push({socketId:socket.id,score:0})
@@ -45,13 +36,14 @@ io.on('connection', (socket)=> {
             console.log(connection, "offer")
             connection.offererICE.push(candidate) 
             io.to(connection?.answerer).emit('newIceCandidate', candidate)
-            return}
+            return
+        }
         connection = connections.find(element=>element.answerer === socket.id)
         if (connection){
             connection.answererICE.push(candidate) 
             console.log(connection, "answer")
             io.to(connection.offerer).emit('newIceCandidate', [candidate, connection.answer])
-            return}
+        }
     })
 
     socket.on('answer', (answer, ackFunc) => {
@@ -61,6 +53,21 @@ io.on('connection', (socket)=> {
         ackFunc(connection)
     })
 
+    ////////////////// GAME LISTENERS /////////////////////
+
+    socket.on('gameOn', ()=>{
+        io.emit('resetButton')
+        gameId = setInterval(()=>{
+            io.emit('game-state', [Math.floor(Math.random()*8),Math.floor(Math.random()*2)])
+        },(500 + Math.random()*4000))
+    })
+
+    socket.on('reset',()=>{
+        players.forEach(player=>{
+            player.score = 0
+        })
+        io.emit('clearGame')
+    })
 
     socket.on('clicked', discId=>{
         io.emit('toggle', discId)
@@ -73,19 +80,18 @@ io.on('connection', (socket)=> {
         socket.broadcast.emit('opponent',mousePosition)
     })
     
-    let time = 6000
-    
-    setInterval(()=>{
-        console.log(time)
-        io.emit('game-state', Math.floor(Math.random()*4))
-        time = (Math.floor(Math.random()*2000))
-        
-    },time)
-
     socket.on('disconnect', socket=>{
         console.log(socket,"disconnected")
+        clearInterval(gameId)
     })
 })
+
+
+setInterval(()=>{
+    players = []
+    connections = []
+},86400000)
+
 
 
 expressServer.listen(8000)
