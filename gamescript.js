@@ -83,7 +83,7 @@ socket.on('toggle', discId => {
 })
 
 discs.forEach(disc=>{
-    disc.addEventListener('click', ()=> {
+    disc.addEventListener('mouseenter', ()=> {
         if(disc.classList.length>1){
             socket.emit('clicked', disc.id)
         }
