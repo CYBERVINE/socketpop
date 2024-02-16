@@ -59,8 +59,11 @@ io.on('connection', (socket)=> {
     
     ////////////////// GAME LISTENERS /////////////////////
     
+    // need game on to only emit to the connectioned sockets
+
     socket.on('gameOn', ()=>{
-        io.emit('resetButton')
+        io.emit('gameInProgress')
+        io.to(playerOne.socketId).to(playerTwo.socketId).emit('resetButton')
         gameId = setInterval(()=>{
             io.emit('game-state', [Math.floor(Math.random()*8),Math.floor(Math.random()*2)])
         },(500 + Math.random()*4000))

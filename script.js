@@ -55,19 +55,22 @@ const createConnection = async (connection) => {
 
 socket.on("openOffer",openOffer=>{
     console.log(socket.id)
-    if (openOffer.offerer != socket.id){
+    if (openOffer?.offerer != socket.id){
         createConnection(openOffer)
     }})
 
 socket.on('newConnection', connection=>{
     menu.innerHTML = ""
     const join = document.createElement("button")
-    if (socket.id === connection.offerer )  join.innerText = "game request made" 
-    else {
+    if (socket.id === connection.offerer ) {
+        const requestMade = document.createElement('p')
+        requestMade.innerText = "Waiting for a new opponent..."
+        menu.appendChild(requestMade)
+    } else {
         join.addEventListener('click', ()=> createConnection(connection))
         join.innerText = "Join Game"
+        menu.appendChild(join)
     }
-    menu.appendChild(join)
 })
 
 socket.on("opponentLeft", ()=>{
@@ -77,7 +80,6 @@ socket.on("opponentLeft", ()=>{
 })
 
 socket.on('gameInProgress',()=>{
-    console.log("game")
     menu.innerHTML = ""
     const gameInProgress = document.createElement("p")
     gameInProgress.innerText = "A game is already in progress.. Try again later!"
