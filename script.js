@@ -1,5 +1,5 @@
-//const socket = io('http://localhost:8000/')
-const socket = io('https://socketpop.onrender.com/')
+const socket = io('http://localhost:8000/')
+// const socket = io('https://socketpop.onrender.com/')
 const localVideo = document.getElementById('localVideo')
 const remoteVideo = document.getElementById('remoteVideo')
 const startGame = document.getElementById('startGame')
@@ -15,7 +15,6 @@ const configuration = {
 const peerConnection = new RTCPeerConnection(configuration)
 
 peerConnection.addEventListener('icecandidate', event => {
-    console.log(event.candidate)
     if(event.candidate) {
         socket.emit('newICE',event.candidate)
     }
@@ -32,7 +31,6 @@ const getMedia = async () => {
     localStream = new MediaStream(media)
     localVideo.srcObject = localStream
     localStream.getTracks().forEach(track=>{
-        console.log(track)
         peerConnection.addTrack(track,localStream)})
 }
 
@@ -54,7 +52,6 @@ const createConnection = async (connection) => {
 }
 
 socket.on("openOffer",openOffer=>{
-    console.log(socket.id)
     if (openOffer?.offerer != socket.id){
         createConnection(openOffer)
     }})
