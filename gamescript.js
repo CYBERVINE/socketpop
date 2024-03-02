@@ -19,8 +19,8 @@ const popFour = new Audio('./pop4.mp3');
 const popFive = new Audio('./pop5.mp3');
 const sounds = [soundOne,soundTwo]
 const pops = [popOne,popTwo,popThree,popFour,popFive]
-sounds.forEach(sound=>sound.volume = 0.005)
-pops.forEach(pop=>pop.volume = 0.07)
+sounds.forEach(sound=>sound.volume = 0.03)
+pops.forEach(pop=>pop.volume = 0.1)
 
 document.addEventListener('mousemove', (e)=>{
     const mousePosition = {
@@ -69,7 +69,6 @@ socket.on('resetButton', ()=>{
 })
 
 socket.on('clearGame', ()=>{
-    
     for(i=0;i<discs.length;i++){
         discs[i].classList.remove("disc--active")
     }
